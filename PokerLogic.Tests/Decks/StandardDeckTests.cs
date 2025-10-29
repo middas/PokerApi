@@ -60,6 +60,19 @@ namespace PokerLogic.Tests.Decks
         }
 
         [Test]
+        public void StandardDeck_Draw_ZeroCount_ShouldReturnEmptyCollection()
+        {
+            // Arrange
+            StandardDeck deck = new();
+            int drawCount = 0;
+            // Act
+            IEnumerable<Card> drawnCards = deck.Draw(drawCount);
+            // Assert
+            Assert.That(drawnCards.Count(), Is.EqualTo(0), "Drawing zero cards should return an empty collection.");
+            Assert.That(deck.GetCards().Count(), Is.EqualTo(52), "The deck should still have 52 cards after drawing zero cards.");
+        }
+
+        [Test]
         public void StandardDeck_Reset_ShouldRestoreOriginalOrder()
         {
             // Arrange

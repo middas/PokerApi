@@ -289,6 +289,26 @@ namespace PokerLogic.Tests.Games.Poker
         }
 
         [Test]
+        public void EvaluateHand_StraightTwoSix_ShouldReturnCorrectRankAndScore()
+        {
+            // Arrange
+            List<Card> hand = [];
+            hand.AddRange(
+            [
+                new Card(Suit.Clubs, Rank.Six),
+                new Card(Suit.Hearts, Rank.Two),
+                new Card(Suit.Spades, Rank.Three),
+                new Card(Suit.Diamonds, Rank.Four),
+                new Card(Suit.Clubs, Rank.Five)
+            ]);
+            // Act
+            var (handRank, score) = EvaluateHand(hand);
+            // Assert
+            Assert.That(handRank, Is.EqualTo(HandRank.Straight), "The hand rank should be Straight.");
+            Assert.That(score, Is.EqualTo(2 + 3 + 4 + 5 + 6), "The score should be the sum of the cards.");
+        }
+
+        [Test]
         public void EvaluateHand_ThreeOfAKind_ShouldReturnCorrectRankAndScore()
         {
             // Arrange

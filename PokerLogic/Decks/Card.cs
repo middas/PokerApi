@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using static PokerLogic.Constants;
 
-namespace PokerLogic
+namespace PokerLogic.Decks
 {
     /// <summary>
     /// Represents a playing card with a specific suit and rank.

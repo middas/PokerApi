@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using PokerLogic.Decks;
+using System.Text.Json.Serialization;
 using static PokerLogic.Constants;
 
 namespace PokerLogic.Games
@@ -18,13 +19,12 @@ namespace PokerLogic.Games
         {
             ArgumentNullException.ThrowIfNull(name);
             Name = name;
-            Hand = new();
         }
 
         /// <summary>
         /// The player's hand of cards.
         /// </summary>
-        public Hand Hand { get; set; }
+        public List<Card> Hand { get; private set; } = [];
 
         /// <summary>
         /// Gets or sets the rank of the hand in a card game.
@@ -48,13 +48,23 @@ namespace PokerLogic.Games
         /// </summary>
         public bool Winner { get; internal set; }
 
-        /// <summary>
-        /// Provides <see cref="Card"/>s to the player's <see cref="Hand"/>.
-        /// </summary>
-        /// <param name="cards">The <see cref="Card"/>s to be given to the player.</param>
-        internal void GiveCards(IEnumerable<Card> cards)
+        public override bool Equals(object? obj)
         {
-            Hand.Cards.AddRange(cards);
+            if (obj is null) return false;
+
+            if (ReferenceEquals(this, obj)) return true;
+
+            if (obj is Player player)
+            {
+                return Name.Equals(player.Name);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }

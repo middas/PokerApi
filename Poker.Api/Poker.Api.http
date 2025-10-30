@@ -1,8 +1,8 @@
 @Poker.Api_HostAddress = http://localhost:5086
 
-### Test the Deal endpoint with valid player names
-# @name deal
-POST {{Poker.Api_HostAddress}}/Poker/Deal
+### Test the New endpoint with valid player names
+# @name new
+POST {{Poker.Api_HostAddress}}/Poker/New
 Content-Type: application/json
 [
   "Alice",
@@ -13,35 +13,26 @@ Content-Type: application/json
   "William",
   "Jane",
   "Amber",
-  "John",
-  "Xavier"
+  "John"
 ]
 
-### Test the Evaluate endpoint with the gameId from the previous response
-PUT {{Poker.Api_HostAddress}}/Poker/Evaluate/{{deal.response.body.$.gameId}}
+### Test the Deal endpoint
+GET {{Poker.Api_HostAddress}}/Poker/{{new.response.body.$.gameId}}/Deal
 Accept: application/json
-Content-Type: application/json
 
-{{deal.response.body.$.players}}
+### Test the Evaluate endpoint with the gameId from the previous response
+GET {{Poker.Api_HostAddress}}/Poker/{{new.response.body.$.gameId}}/Evaluate
+Accept: application/json
 
+### Test the AddPlayer endpoint
+PUT {{Poker.Api_HostAddress}}/Poker/{{new.response.body.$.gameId}}/Player/Xavier
 
-### Test the Deal endpoint with no player names (should return 400 Bad Request)
-POST {{Poker.Api_HostAddress}}/Poker/Deal
-Content-Type: application/json
+### Test the RemovePlayer endpoint
+DELETE {{Poker.Api_HostAddress}}/Poker/{{new.response.body.$.gameId}}/Player/Xavier
 
-[]
-
-### Test the Deal endpoint with invalid input (should return 400 Bad Request)
-POST {{Poker.Api_HostAddress}}/Poker/Deal
-Content-Type: application/json
-
-"InvalidInput"
-
-### Test the Deal endpoint with invalid action (should return 405 Method Not Allowed)
-PUT {{Poker.Api_HostAddress}}/Poker/Deal
-Content-Type: application/json
-
-["Justin"]
+### Test New enpoint with no names
+# @name new
+POST {{Poker.Api_HostAddress}}/Poker/New
 
 ### OpenApi
 GET {{Poker.Api_HostAddress}}/openapi/v1.json

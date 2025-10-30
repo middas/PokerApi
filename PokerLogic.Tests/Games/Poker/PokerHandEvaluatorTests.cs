@@ -1,4 +1,5 @@
-﻿using static PokerLogic.Constants;
+﻿using PokerLogic.Decks;
+using static PokerLogic.Constants;
 using static PokerLogic.Games.Poker.PokerHandEvaluator;
 
 namespace PokerLogic.Tests.Games.Poker
@@ -10,8 +11,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_Flush_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Diamonds, Rank.Two),
                 new Card(Suit.Diamonds, Rank.Five),
@@ -30,8 +31,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_FourOfAKind_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Nine),
                 new Card(Suit.Hearts, Rank.Nine),
@@ -50,8 +51,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_FourOfAKindWithHigherCards_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Two),
                 new Card(Suit.Hearts, Rank.Two),
@@ -59,8 +60,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Two),
                 new Card(Suit.Clubs, Rank.Ace)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Three),
@@ -83,8 +84,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_FullHouse_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Six),
                 new Card(Suit.Hearts, Rank.Six),
@@ -103,8 +104,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_FullHouseWithHigherCards_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Two),
                 new Card(Suit.Hearts, Rank.Ace),
@@ -112,8 +113,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Two),
                 new Card(Suit.Clubs, Rank.Ace)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Three),
@@ -136,8 +137,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_HighCard_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Two),
                 new Card(Suit.Hearts, Rank.Five),
@@ -156,8 +157,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_OnePair_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Three),
@@ -176,8 +177,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_OnePairWithHigherCards_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Two),
                 new Card(Suit.Hearts, Rank.Ace),
@@ -185,8 +186,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Queen),
                 new Card(Suit.Clubs, Rank.King)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Three),
@@ -209,9 +210,9 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_RoyalFlush_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
+            List<Card> hand = [];
 
-            hand.Cards.AddRange(
+            hand.AddRange(
             [
                 new Card(Suit.Hearts, Rank.Ten),
                 new Card(Suit.Hearts, Rank.Jack),
@@ -231,8 +232,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_Straight_AceLow_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Ace),
                 new Card(Suit.Hearts, Rank.Two),
@@ -251,8 +252,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_Straight_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Four),
@@ -271,8 +272,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_StraightFlush_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Spades, Rank.Six),
                 new Card(Suit.Spades, Rank.Seven),
@@ -291,8 +292,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_ThreeOfAKind_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Five),
                 new Card(Suit.Hearts, Rank.Five),
@@ -311,8 +312,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_ThreeOfAKindWithHigherCards_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Three),
                 new Card(Suit.Hearts, Rank.Three),
@@ -320,8 +321,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Four),
                 new Card(Suit.Clubs, Rank.Two)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Two),
                 new Card(Suit.Hearts, Rank.Two),
@@ -344,8 +345,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_TwoPair_ShouldReturnCorrectRankAndScore()
         {
             // Arrange
-            Hand hand = new();
-            hand.Cards.AddRange(
+            List<Card> hand = [];
+            hand.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Four),
                 new Card(Suit.Hearts, Rank.Four),
@@ -364,8 +365,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_TwoPairTie_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Ace),
                 new Card(Suit.Hearts, Rank.Ace),
@@ -373,8 +374,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Four),
                 new Card(Suit.Clubs, Rank.Two)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Ace),
                 new Card(Suit.Hearts, Rank.Ace),
@@ -397,8 +398,8 @@ namespace PokerLogic.Tests.Games.Poker
         public void EvaluateHand_TwoPairWithHigherCards_ShouldReturnHigherScore()
         {
             // Arrange
-            Hand handOne = new();
-            handOne.Cards.AddRange(
+            List<Card> handOne = [];
+            handOne.AddRange(
             [
                 new Card(Suit.Clubs, Rank.Ace),
                 new Card(Suit.Hearts, Rank.Ace),
@@ -406,8 +407,8 @@ namespace PokerLogic.Tests.Games.Poker
                 new Card(Suit.Diamonds, Rank.Three),
                 new Card(Suit.Clubs, Rank.Two)
             ]);
-            Hand handTwo = new();
-            handTwo.Cards.AddRange(
+            List<Card> handTwo = [];
+            handTwo.AddRange(
             [
                 new Card(Suit.Clubs, Rank.King),
                 new Card(Suit.Hearts, Rank.King),

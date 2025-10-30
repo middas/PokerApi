@@ -1,4 +1,5 @@
 ﻿using PokerLogic.Decks;
+using PokerLogic.Games.Exceptions;
 using static PokerLogic.Constants;
 
 namespace PokerLogic.Games.Poker
@@ -14,6 +15,7 @@ namespace PokerLogic.Games.Poker
     {
         private readonly IDeck deck;
         private readonly List<Card> drawnCards = [];
+        private readonly List<Player> players = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FiveCardPokerGame"/> class.
@@ -26,14 +28,19 @@ namespace PokerLogic.Games.Poker
             Reset();
         }
 
-        public IEnumerable<Player> Deal(IEnumerable<Player> players)
-        {
-            ArgumentNullException.ThrowIfNull(players);
+        public int PlayerCount => players.Count;
 
+        public void AddPlayer(Player player)
+        {
+            players.Add(player);
+        }
+
+        public IEnumerable<Player> Deal()
+        {
             var playerList = players as IList<Player> ?? [.. players];
             if (!playerList.Any())
             {
-                throw new ArgumentException("Players collection cannot be empty.", nameof(players));
+                throw new NoPlayerException();
             }
 
             // Deal 5 rounds, one card per player each round
@@ -43,7 +50,7 @@ namespace PokerLogic.Games.Poker
                 {
                     if (round == 0)
                     {
-                        player.Hand.Reset();
+                        player.Hand.Clear();
                     }
 
                     if (deck.Count == 0)
@@ -55,7 +62,7 @@ namespace PokerLogic.Games.Poker
                     var cards = deck.Draw(1).ToList();
 
                     drawnCards.AddRange(cards);
-                    player.GiveCards(cards);
+                    player.Hand.AddRange(cards);
                 }
 
                 if (deck.Count == 0)
@@ -68,9 +75,12 @@ namespace PokerLogic.Games.Poker
             return playerList;
         }
 
-        public IEnumerable<Player> DetermineWinners(IEnumerable<Player> players)
+        public IEnumerable<Player> DetermineWinners()
         {
-            ArgumentNullException.ThrowIfNull(players);
+            if (players is null || !players.Any())
+            {
+                throw new NoPlayerException();
+            }
 
             var playerScores = new List<PlayerScore>(players.Count());
 
@@ -110,6 +120,11 @@ namespace PokerLogic.Games.Poker
                 .Select(ps => ps.Player).Union(players).Distinct();
         }
 
+        public void RemovePlayer(Player player)
+        {
+            players.Remove(player);
+        }
+
         public void Reset()
         {
             deck.Reset();
@@ -117,15 +132,17 @@ namespace PokerLogic.Games.Poker
             drawnCards.Clear();
         }
 
-        public void ValidateHands(IEnumerable<Player> players)
+        public void ValidateHands()
         {
-            ArgumentNullException.ThrowIfNull(players);
-
             var playerList = players as IList<Player> ?? [.. players];
+            if (playerList.Count == 0)
+            {
+                return;
+            }
 
             // Build frequency map for all cards across players (to detect duplicates across players)
             var cardFrequencies = new Dictionary<Card, int>();
-            foreach (var card in playerList.SelectMany(p => p.Hand.Cards))
+            foreach (var card in playerList.SelectMany(p => p.Hand))
             {
                 if (cardFrequencies.TryGetValue(card, out var count))
                 {
@@ -142,7 +159,7 @@ namespace PokerLogic.Games.Poker
 
             foreach (var player in playerList)
             {
-                var cardSet = new HashSet<Card>(player.Hand.Cards);
+                var cardSet = new HashSet<Card>(player.Hand);
                 bool hasExactlyFiveUnique = cardSet.Count == 5;
                 bool allFromDrawn = hasExactlyFiveUnique && cardSet.IsSubsetOf(drawnSet);
                 bool noSharedCards = hasExactlyFiveUnique && cardSet.All(c => cardFrequencies.TryGetValue(c, out var freq) && freq == 1);

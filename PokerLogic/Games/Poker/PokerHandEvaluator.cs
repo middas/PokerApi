@@ -1,4 +1,5 @@
-﻿using static PokerLogic.Constants;
+﻿using PokerLogic.Decks;
+using static PokerLogic.Constants;
 
 namespace PokerLogic.Games.Poker
 {
@@ -20,11 +21,11 @@ namespace PokerLogic.Games.Poker
         /// <param name="hand">The poker hand to evaluate, consisting of a collection of cards.</param>
         /// <returns>A tuple containing the rank of the hand as a <see cref="HandRank"/> and the calculated score as an integer.
         /// The score is determined based on the value of the cards and an optional modifier for certain types of hand ranks.</returns>
-        internal static (HandRank handRank, int score) EvaluateHand(Hand hand)
+        internal static (HandRank handRank, int score) EvaluateHand(IEnumerable<Card> hand)
         {
             bool isStraight = IsStraight(hand, out Rank highCard);
             bool isFlush = IsFlush(hand);
-            int sumRanks = hand.Cards.Sum(c => (int)c.Rank);
+            int sumRanks = hand.Sum(c => (int)c.Rank);
 
             if (isStraight && isFlush)
             {
@@ -45,7 +46,7 @@ namespace PokerLogic.Games.Poker
                 return (HandRank.Straight, highCard == Rank.Five ? 15 : sumRanks);
             }
 
-            var rankGroups = hand.Cards.GroupBy(c => c.Rank).ToList();
+            var rankGroups = hand.GroupBy(c => c.Rank).ToList();
             var quads = rankGroups.FirstOrDefault(g => g.Count() == 4);
             var trips = rankGroups.Where(g => g.Count() == 3).OrderByDescending(g => g.Key).ToList();
             var pairs = rankGroups.Where(g => g.Count() == 2).OrderByDescending(g => g.Key).ToList();
@@ -75,7 +76,7 @@ namespace PokerLogic.Games.Poker
                 return (HandRank.OnePair, (int)pairs[0].Key * 2 * 14 + sumRanks);
             }
 
-            int high = hand.Cards.Max(c => (int)c.Rank);
+            int high = hand.Max(c => (int)c.Rank);
             return (HandRank.HighCard, high * 14 + sumRanks);
         }
 
@@ -85,9 +86,9 @@ namespace PokerLogic.Games.Poker
         /// <param name="hand">The hand to evaluate, which contains a collection of cards.</param>
         /// <returns><see langword="true"/> if the hand contains at least five cards of the same suit; otherwise, <see
         /// langword="false"/>.</returns>
-        private static bool IsFlush(Hand hand)
+        private static bool IsFlush(IEnumerable<Card> hand)
         {
-            return hand.Cards.GroupBy(c => c.Suit).Any(g => g.Count() >= 5);
+            return hand.GroupBy(c => c.Suit).Any(g => g.Count() >= 5);
         }
 
         /// <summary>
@@ -101,9 +102,9 @@ namespace PokerLogic.Games.Poker
         /// <param name="highCard">When this method returns, contains the highest rank in the straight if a straight is found; otherwise, <see
         /// cref="Rank.Two"/>.</param>
         /// <returns><see langword="true"/> if the hand contains a straight; otherwise, <see langword="false"/>.</returns>
-        private static bool IsStraight(Hand hand, out Rank highCard)
+        private static bool IsStraight(IEnumerable<Card> hand, out Rank highCard)
         {
-            var ranks = hand.Cards.Select(c => (int)c.Rank).Distinct().OrderBy(r => r).ToList();
+            var ranks = hand.Select(c => (int)c.Rank).Distinct().OrderBy(r => r).ToList();
             if (ranks.Count < 5)
             {
                 highCard = Rank.Two;

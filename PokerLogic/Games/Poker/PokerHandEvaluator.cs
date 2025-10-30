@@ -19,76 +19,64 @@ namespace PokerLogic.Games.Poker
         /// are handled appropriately.</remarks>
         /// <param name="hand">The poker hand to evaluate, consisting of a collection of cards.</param>
         /// <returns>A tuple containing the rank of the hand as a <see cref="HandRank"/> and the calculated score as an integer.
-        /// The score is determined based on the hand's rank and the values of the cards.</returns>
+        /// The score is determined based on the value of the cards and an optional modifier for certain types of hand ranks.</returns>
         internal static (HandRank handRank, int score) EvaluateHand(Hand hand)
         {
             bool isStraight = IsStraight(hand, out Rank highCard);
             bool isFlush = IsFlush(hand);
+            int sumRanks = hand.Cards.Sum(c => (int)c.Rank);
 
             if (isStraight && isFlush)
             {
                 if (highCard == Rank.Ace)
                 {
-                    return (HandRank.RoyalFlush, hand.Cards.Sum(c => (int)c.Rank));
+                    return (HandRank.RoyalFlush, sumRanks);
                 }
-                return (HandRank.StraightFlush, hand.Cards.Sum(c => (int)c.Rank));
+
+                return (HandRank.StraightFlush, sumRanks);
             }
-            else if (isFlush)
+            if (isFlush)
             {
-                return (HandRank.Flush, hand.Cards.Sum(c => (int)c.Rank));
-            }
-            else if (isStraight)
-            {
-                if (highCard == Rank.Five)
-                {
-                    // ace is low in this case
-                    return (HandRank.Straight, 15);
-                }
-                return (HandRank.Straight, hand.Cards.Sum(c => (int)c.Rank));
+                return (HandRank.Flush, sumRanks);
             }
 
-            // Check for other hand ranks (Four of a Kind, Full House, etc.)
-            IEnumerable<IGrouping<Rank, Card>> rankGroups = hand.Cards.GroupBy(c => c.Rank);
-            HandRank rank = HandRank.HighCard;
-            int scoreModifier = 0;
-            if (rankGroups.Any(g => g.Count() == 4))
+            if (isStraight)
             {
-                scoreModifier = (int)rankGroups.Where(g => g.Count() == 4).Max(g => g.Key) * 4 * 14;
-                rank = HandRank.FourOfAKind;
-            }
-            else if (rankGroups.Any(g => g.Count() == 3) && rankGroups.Any(g => g.Count() == 2))
-            {
-                // More weight is put on the three of a kind than the pair
-                scoreModifier = (int)rankGroups.Where(g => g.Count() == 3).Max(g => g.Key) * 3 * 14 * 14
-                              + (int)rankGroups.Where(g => g.Count() == 2).Max(g => g.Key) * 2 * 14;
-                rank = HandRank.FullHouse;
-            }
-            else if (rankGroups.Any(g => g.Count() == 3))
-            {
-                scoreModifier = (int)rankGroups.Where(g => g.Count() == 3).Max(g => g.Key) * 3 * 14;
-                rank = HandRank.ThreeOfAKind;
-            }
-            else
-            {
-                int pairCount = rankGroups.Count(g => g.Count() == 2);
-                if (pairCount >= 2)
-                {
-                    scoreModifier = rankGroups.Where(g => g.Count() == 2).OrderByDescending(g => g.Key).First().Sum(c => (int)c.Rank * 14 * 2);
-                    rank = HandRank.TwoPair;
-                }
-                else if (pairCount == 1)
-                {
-                    scoreModifier = rankGroups.Where(g => g.Count() == 2).Sum(g => (int)g.Key * 2 * 14);
-                    rank = HandRank.OnePair;
-                }
+                return (HandRank.Straight, highCard == Rank.Five ? 15 : sumRanks);
             }
 
-            if (rank == HandRank.HighCard)
+            var rankGroups = hand.Cards.GroupBy(c => c.Rank).ToList();
+            var quads = rankGroups.FirstOrDefault(g => g.Count() == 4);
+            var trips = rankGroups.Where(g => g.Count() == 3).OrderByDescending(g => g.Key).ToList();
+            var pairs = rankGroups.Where(g => g.Count() == 2).OrderByDescending(g => g.Key).ToList();
+
+            if (quads != null)
             {
-                scoreModifier = hand.Cards.Max(c => (int)c.Rank) * 14;
+                return (HandRank.FourOfAKind, (int)quads.Key * 4 * 14 + sumRanks);
             }
 
-            return (rank, hand.Cards.Sum(c => (int)c.Rank) + scoreModifier);
+            if (trips.Count > 0 && pairs.Count > 0)
+            {
+                return (HandRank.FullHouse, (int)trips[0].Key * 3 * 14 * 14 + (int)pairs[0].Key * 2 * 14 + sumRanks);
+            }
+
+            if (trips.Count > 0)
+            {
+                return (HandRank.ThreeOfAKind, (int)trips[0].Key * 3 * 14 + sumRanks);
+            }
+
+            if (pairs.Count >= 2)
+            {
+                return (HandRank.TwoPair, pairs[0].Sum(g => (int)g.Rank * 2 * 14) + sumRanks);
+            }
+
+            if (pairs.Count == 1)
+            {
+                return (HandRank.OnePair, (int)pairs[0].Key * 2 * 14 + sumRanks);
+            }
+
+            int high = hand.Cards.Max(c => (int)c.Rank);
+            return (HandRank.HighCard, high * 14 + sumRanks);
         }
 
         /// <summary>
@@ -115,43 +103,33 @@ namespace PokerLogic.Games.Poker
         /// <returns><see langword="true"/> if the hand contains a straight; otherwise, <see langword="false"/>.</returns>
         private static bool IsStraight(Hand hand, out Rank highCard)
         {
-            if (hand.Cards.Count < 5)
+            var ranks = hand.Cards.Select(c => (int)c.Rank).Distinct().OrderBy(r => r).ToList();
+            if (ranks.Count < 5)
             {
                 highCard = Rank.Two;
                 return false;
             }
 
-            Card[] sortedCards = [.. hand.Cards.OrderBy(c => c.Rank).Distinct()];
-
-            // A straight always consists of 5 unique consecutive ranks
-            int consecutiveCount = 1;
-            for (int i = 0; i < sortedCards.Length; i++)
+            // Check for normal straights
+            for (int i = 0; i <= ranks.Count - 5; i++)
             {
-                if (i + 1 >= sortedCards.Length)
+                // The low card minus the high card should equal 4 for a straight
+                if (ranks[i + 4] - ranks[i] == 4)
                 {
-                    highCard = Rank.Two;
-                    return false;
-                }
-
-                if (consecutiveCount == 4 && sortedCards[i].Rank == Rank.Five && sortedCards[i + 1].Rank == Rank.Ace)
-                {
-                    highCard = Rank.Five;
+                    highCard = (Rank)ranks[i + 4];
                     return true;
                 }
+            }
 
-                if ((int)sortedCards[i].Rank == (int)sortedCards[i + 1].Rank - 1)
-                {
-                    consecutiveCount++;
-                    if (consecutiveCount == 5)
-                    {
-                        highCard = sortedCards[i + 1].Rank;
-                        return true;
-                    }
-                }
-                else
-                {
-                    consecutiveCount = 1;
-                }
+            // Check for wheel straight (A-2-3-4-5)
+            if (ranks.Contains((int)Rank.Ace) &&
+                ranks.Contains((int)Rank.Two) &&
+                ranks.Contains((int)Rank.Three) &&
+                ranks.Contains((int)Rank.Four) &&
+                ranks.Contains((int)Rank.Five))
+            {
+                highCard = Rank.Five;
+                return true;
             }
 
             highCard = Rank.Two;

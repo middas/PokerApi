@@ -110,7 +110,7 @@ namespace PokerLogic.Games.Poker
             // Build bitmask of distinct ranks (Two -> bit0, ..., Ace -> bit12)
             foreach (var r in hand.Select(c => (int)c.Rank).Distinct())
             {
-                int idx = r == (int)Rank.Ace ? 12 : r - 2;
+                int idx = r - 2;
                 if (idx < 0 || idx > 12) continue;
                 mask |= 1 << idx;
             }

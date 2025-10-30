@@ -85,6 +85,7 @@ namespace PokerLogic.Games.Poker
                     Score = score
                 });
                 player.HandRank = handRank;
+                player.Winner = false;
             }
 
             if (playerScores.Count == 0)
@@ -97,9 +98,16 @@ namespace PokerLogic.Games.Poker
                 .Where(ps => ps.HandRank == highestRank)
                 .Max(ps => ps.Score);
 
-            return playerScores
-                .Where(ps => ps.HandRank == highestRank && ps.Score == highestScore)
-                .Select(ps => ps.Player);
+            var winners = playerScores.Where(ps => ps.HandRank == highestRank && ps.Score == highestScore).Select(ps => ps.Player);
+            foreach(var player in winners)
+            {
+                player.Winner = true;
+            }
+
+            return playerScores.OrderByDescending(ps => ps.Player.Winner)
+                .ThenByDescending(ps => ps.HandRank)
+                .ThenByDescending(ps => ps.Score)
+                .Select(ps => ps.Player).Union(players).Distinct();
         }
 
         public void Reset()

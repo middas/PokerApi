@@ -19,8 +19,8 @@
         /// <remarks>The method evaluates each player's score to determine the winners. Ensure that the
         /// players collection is not null and contains valid player objects.</remarks>
         /// <param name="players">A collection of players to evaluate. Each player must have a valid score.</param>
-        /// <returns>An enumerable collection of players who are considered winners. The collection will be empty if no players
-        /// meet the winning criteria.</returns>
+        /// <returns>An enumerable collection of players with their hand's <see cref="Constants.HandRank"/> and if 
+        /// they are the winner of the hand</returns>
         IEnumerable<Player> DetermineWinners(IEnumerable<Player> players);
 
         /// <summary>

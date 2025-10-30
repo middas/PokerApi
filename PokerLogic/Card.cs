@@ -1,4 +1,5 @@
-﻿using static PokerLogic.Constants;
+﻿using System.Text.Json.Serialization;
+using static PokerLogic.Constants;
 
 namespace PokerLogic
 {
@@ -31,11 +32,13 @@ namespace PokerLogic
         /// <summary>
         /// Gets or sets the rank of the entity.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Rank Rank { get; set; }
 
         /// <summary>
         /// Gets or sets the suit of a playing card.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Suit Suit { get; set; }
 
         /// <summary>

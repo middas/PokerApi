@@ -8,9 +8,17 @@
     public sealed class Hand
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Hand"/> class.
+        /// </summary>
+        public Hand()
+        {
+            Cards = [];
+        }
+
+        /// <summary>
         /// Gets the collection of cards.
         /// </summary>
-        public List<Card> Cards { get; } = [];
+        public List<Card> Cards { get; set; }
 
         /// <summary>
         /// Resets the hand by clearing all cards.

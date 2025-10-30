@@ -1,4 +1,5 @@
-﻿using static PokerLogic.Constants;
+﻿using System.Text.Json.Serialization;
+using static PokerLogic.Constants;
 
 namespace PokerLogic.Games
 {
@@ -17,17 +18,25 @@ namespace PokerLogic.Games
         {
             ArgumentNullException.ThrowIfNull(name);
             Name = name;
+            Hand = new();
         }
 
         /// <summary>
         /// The player's hand of cards.
         /// </summary>
-        public Hand Hand { get; } = new();
+        public Hand Hand { get; set; }
 
         /// <summary>
         /// Gets or sets the rank of the hand in a card game.
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public HandRank? HandRank { get; set; }
+
+        /// <summary>
+        /// Whether the player has a valid hand.
+        /// </summary>
+        public bool HasValidHand { get; internal set; }
 
         /// <summary>
         /// The name of the player.
@@ -35,9 +44,9 @@ namespace PokerLogic.Games
         public string Name { get; }
 
         /// <summary>
-        /// Whether the player has a valid hand.
+        /// Indicates whether the player is the winner of the game.
         /// </summary>
-        internal bool HasValidHand { get; set; }
+        public bool Winner { get; internal set; }
 
         /// <summary>
         /// Provides <see cref="Card"/>s to the player's <see cref="Hand"/>.

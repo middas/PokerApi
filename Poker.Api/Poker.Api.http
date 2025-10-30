@@ -1,0 +1,47 @@
+@Poker.Api_HostAddress = http://localhost:5086
+
+### Test the Deal endpoint with valid player names
+# @name deal
+POST {{Poker.Api_HostAddress}}/Poker/Deal
+Content-Type: application/json
+[
+  "Alice",
+  "Bob",
+  "Charlie",
+  "Justin",
+  "Leah",
+  "William",
+  "Jane",
+  "Amber",
+  "John",
+  "Xavier"
+]
+
+### Test the Evaluate endpoint with the gameId from the previous response
+PUT {{Poker.Api_HostAddress}}/Poker/Evaluate/{{deal.response.body.$.gameId}}
+Accept: application/json
+Content-Type: application/json
+
+{{deal.response.body.$.players}}
+
+
+### Test the Deal endpoint with no player names (should return 400 Bad Request)
+POST {{Poker.Api_HostAddress}}/Poker/Deal
+Content-Type: application/json
+
+[]
+
+### Test the Deal endpoint with invalid input (should return 400 Bad Request)
+POST {{Poker.Api_HostAddress}}/Poker/Deal
+Content-Type: application/json
+
+"InvalidInput"
+
+### Test the Deal endpoint with invalid action (should return 405 Method Not Allowed)
+PUT {{Poker.Api_HostAddress}}/Poker/Deal
+Content-Type: application/json
+
+["Justin"]
+
+### OpenApi
+GET {{Poker.Api_HostAddress}}/openapi/v1.json

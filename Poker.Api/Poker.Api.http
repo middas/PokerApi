@@ -45,3 +45,6 @@ Content-Type: application/json
 
 ### OpenApi
 GET {{Poker.Api_HostAddress}}/openapi/v1.json
+
+### Swagger UI
+GET {{Poker.Api_HostAddress}}/swagger/index.html

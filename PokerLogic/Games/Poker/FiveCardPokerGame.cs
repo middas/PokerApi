@@ -99,7 +99,7 @@ namespace PokerLogic.Games.Poker
                 .Max(ps => ps.Score);
 
             var winners = playerScores.Where(ps => ps.HandRank == highestRank && ps.Score == highestScore).Select(ps => ps.Player);
-            foreach(var player in winners)
+            foreach (var player in winners)
             {
                 player.Winner = true;
             }

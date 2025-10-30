@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Poker.Api.Models;
 using PokerLogic.Games;
 using PokerLogic.Games.Poker;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace Poker.Api.Controllers
 {
@@ -12,8 +10,9 @@ namespace Poker.Api.Controllers
     [ApiController]
     public class PokerController : ControllerBase
     {
-        private readonly ILogger<PokerController> logger;
         private static readonly Dictionary<Guid, IGame> games = [];
+
+        private readonly ILogger<PokerController> logger;
 
         public PokerController(ILogger<PokerController> logger)
         {
@@ -42,7 +41,7 @@ namespace Poker.Api.Controllers
             catch (ArgumentException ex)
             {
                 logger.LogError(ex, "Error dealing poker hands: {Message}", ex.Message);
-                return BadRequest(new ProblemDetails() 
+                return BadRequest(new ProblemDetails()
                 {
                     Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
                     Title = $"Error dealing poker hands.",
@@ -51,7 +50,7 @@ namespace Poker.Api.Controllers
                     {
                         {"errors", new[] { ex.Message } },
                         {"traceId", Request.Headers.TraceParent.ToString() }
-                    }                    
+                    }
                 });
             }
         }

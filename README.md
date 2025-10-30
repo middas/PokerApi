@@ -1,10 +1,10 @@
 # Poker Game Solution
 
-This repository contains a modular, testable implementation of a Poker game engine and a RESTful API built with .NET 9 and C# 13. The solution is organized into three main projects:
+This repository contains a modular, testable implementation of a Poker game engine and a RESTful API built with .NET9 and C#13. The solution is organized into three main projects:
 
-- **PokerLogic**: Core game logic, including deck, hand, and player management.
-- **Poker.Api**: ASP.NET Core Web API exposing endpoints for dealing and evaluating poker hands.
-- **PokerLogic.Tests**: NUnit-based unit tests for the core logic.
+- `PokerLogic` - Core game logic, including deck, hand, and player management.
+- `Poker.Api` - ASP.NET Core Web API exposing endpoints for dealing and evaluating poker hands.
+- `PokerLogic.Tests` - NUnit-based unit tests for the core logic and coverage configuration.
 
 ---
 
@@ -18,72 +18,85 @@ This repository contains a modular, testable implementation of a Poker game engi
 
 ### Poker.Api
 
-- Provides REST endpoints to:
-  - Deal a new hand to players (`POST /Poker/Deal`)
-  - Evaluate hands and determine winners (`PUT /Poker/Evaluate/{gameId}`)
+- Provides REST endpoints to manage games and players and to deal/evaluate poker hands.
 - Uses OpenAPI/Swagger for API documentation.
 - Returns detailed error information using Problem Details.
 
 ### PokerLogic.Tests
 
-- Contains comprehensive NUnit tests for all core logic.
-- Uses Coverlet for code coverage.
+- Contains NUnit tests that validate core logic and ensure correctness.
+- Can be used with Coverlet for code coverage reporting.
 
 ---
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- [.NET9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- (Optional) Visual Studio2022 or later or any editor that supports .NET9 projects
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- Visual Studio 2022 (or later)
+---
 
-### Build and Run
+## Build and run
 
-1. **Clone the repository:** `git clone  cd `
-1. **Restore dependencies:** `dotnet restore`
-1. **Build the solution:** `dotnet build`
-1. **Run the API:** `dotnet run --project Poker.Api`
-1. **Access the API documentation:**
-   - Navigate to `https://localhost:<port>/swagger` or `/openapi` (in development mode).
+From the solution root:
 
-### Running Tests
-`dotnet test PokerLogic.Tests`
+```bash
+dotnet restore
+dotnet build
+dotnet run --project Poker.Api
+```
+
+When running the API in development, OpenAPI/Swagger is available at `https://localhost:<port>/swagger` or `/openapi`.
 
 ---
 
 ## API Endpoints
 
-### Deal a New Hand
+The controller exposes the following endpoints (base route `/{controller}` => `/Poker`):
 
-- **POST** `/Poker/Deal`
-- **Body:**  `["Alice", "Bob", "Charlie"]`
-- **Response:** `{ "gameId": "GUID", "players": [ { "name": "Alice", "hand": { "cards": [ ... ] }, "handRank": "OnePair", "hasValidHand": true, "winner": false }, ... ] }`
+- `POST /Poker/New`
+  - Creates a new game and optionally accepts a JSON array of player names to add to the game.
+  - Body: optional JSON array of player names, e.g. `["Alice", "Bob"]`
+  - Response: `200 OK` with `{ "gameId": "GUID" }` on success.
 
-### Evaluate Hands
+- `PUT /Poker/{gameId}/Player/{playerName}`
+  - Adds a player with name `playerName` to the existing game `gameId`.
+  - Response: `200 OK` on success, `404 Not Found` if the game does not exist.
 
-- **PUT** `/Poker/Evaluate/{gameId}`
-- **Body:**  `[ { "name": "Alice", "hand": { "cards": [ ... ] } }, ... ]`
-- **Response:** `{ "players": [ { "name": "Alice", "handRank": "OnePair", "winner": true }, ... ] }`
-  
+- `DELETE /Poker/{gameId}/Player/{playerName}`
+  - Removes the player named `playerName` from the game `gameId`. If no players remain, the game is removed.
+  - Response: `200 OK` on success, `404 Not Found` if the game does not exist.
+
+- `GET /Poker/{gameId}/Deal`
+  - Resets and deals a new hand for the specified game. Returns the dealt hands and player data.
+  - Response: `200 OK` with dealt hands payload or `404 Not Found` if the game does not exist.
+
+- `GET /Poker/{gameId}/Evaluate`
+  - Validates hands and determines winners for the specified game.
+  - Response: `200 OK` with evaluation results or `404 Not Found` if the game does not exist.
+
+Note: The API design in this project uses explicit game lifecycles: create a game (`/New`), add players, then call `/Deal` and `/Evaluate` for that game.
+
 ---
 
-## Technologies Used
+## Running tests
 
-- **.NET 9 / C# 13**
-- **ASP.NET Core Web API**
-- **NUnit** (testing)
-- **Coverlet** (code coverage)
-- **OpenAPI/Swagger** (API documentation)
+From the solution root run:
+
+```bash
+dotnet test PokerLogic.Tests
+```
+
+For coverage, the tests can be run with Coverlet or other coverage tools supported by the .NET tooling.
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
+Contributions are welcome. Please open issues or submit pull requests with clear descriptions of changes and any relevant tests.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the `LICENSE` file for details.

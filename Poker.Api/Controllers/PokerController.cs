@@ -52,6 +52,7 @@ namespace Poker.Api.Controllers
         [ProducesResponseType<DealResponseModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Deal(string gameId)
         {
             Guid guid = Guid.Parse(gameId);

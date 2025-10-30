@@ -20,7 +20,7 @@ namespace Poker.Api.Controllers
         }
 
         [HttpPut("{gameId}/Player/{playerName}")]
-        [ProducesResponseType<DealResponseModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
@@ -121,7 +121,7 @@ namespace Poker.Api.Controllers
         }
 
         [HttpPost("New")]
-        [ProducesResponseType<DealResponseModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType<NewGameResponseModel>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
         public IActionResult New([FromBody][Description("The player names")] string[]? playerNames)
@@ -162,7 +162,7 @@ namespace Poker.Api.Controllers
         }
 
         [HttpDelete("{gameId}/Player/{playerName}")]
-        [ProducesResponseType<DealResponseModel>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]

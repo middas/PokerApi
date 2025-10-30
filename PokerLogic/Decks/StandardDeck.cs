@@ -2,7 +2,7 @@
 
 namespace PokerLogic.Decks
 {
-    public class StandardDeck : IDeck
+    public sealed class StandardDeck : IDeck
     {
         // Random number generator for shuffling static to ensure rapid calls produce different results
         private static Random rng = new();
@@ -13,6 +13,8 @@ namespace PokerLogic.Decks
         {
             Reset();
         }
+
+        public int Count => cards.Count;
 
         public IEnumerable<Card> Draw(int count)
         {

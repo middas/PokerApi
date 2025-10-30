@@ -73,6 +73,47 @@ namespace PokerLogic.Tests.Decks
         }
 
         [Test]
+        public void StandardDeck_DrawAllCards_ShouldEmptyDeck()
+        {
+            // Arrange
+            StandardDeck deck = new();
+            int totalCards = deck.Count;
+            // Act
+            IEnumerable<Card> drawnCards = deck.Draw(totalCards);
+            // Assert
+            Assert.That(drawnCards.Count(), Is.EqualTo(totalCards), "Drawing all cards should return all cards in the deck.");
+            Assert.That(deck.Count, Is.EqualTo(0), "The deck should be empty after drawing all cards.");
+        }
+
+        [Test]
+        public void StandardDeck_DrawAllThenReset_ShouldRestoreDeck()
+        {
+            // Arrange
+            StandardDeck deck = new();
+            int totalCards = deck.Count;
+            _ = deck.Draw(totalCards);
+            // Act
+            deck.Reset();
+            IEnumerable<Card> resetCards = deck.GetCards();
+            // Assert
+            Assert.That(resetCards.Count(), Is.EqualTo(52), "The deck should contain 52 cards after resetting.");
+        }
+
+        [Test]
+        public void StandardDeck_MultipleShuffles_ShouldProduceDifferentOrders()
+        {
+            // Arrange
+            StandardDeck deck = new();
+            // Act
+            deck.Shuffle();
+            IEnumerable<Card> firstShuffle = [.. deck.GetCards()];
+            deck.Shuffle();
+            IEnumerable<Card> secondShuffle = [.. deck.GetCards()];
+            // Assert
+            Assert.That(firstShuffle, Is.Not.EqualTo(secondShuffle), "Multiple shuffles should produce different card orders.");
+        }
+
+        [Test]
         public void StandardDeck_Reset_ShouldRestoreOriginalOrder()
         {
             // Arrange

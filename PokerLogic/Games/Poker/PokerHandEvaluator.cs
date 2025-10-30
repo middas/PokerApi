@@ -97,37 +97,39 @@ namespace PokerLogic.Games.Poker
         /// </summary>
         /// <remarks>A straight consists of exactly five unique cards with consecutive ranks. This method
         /// also accounts for the special case of a "wheel" straight, which is composed of Ace, Two, Three, Four, and
-        /// Five.</remarks>
+        /// Five. Can check for a straight with 5-7 cards.</remarks>
         /// <param name="hand">The hand of cards to evaluate.</param>
         /// <param name="highCard">When this method returns, contains the highest rank in the straight if a straight is found; otherwise, <see
         /// cref="Rank.Two"/>.</param>
         /// <returns><see langword="true"/> if the hand contains a straight; otherwise, <see langword="false"/>.</returns>
         private static bool IsStraight(IEnumerable<Card> hand, out Rank highCard)
         {
-            var ranks = hand.Select(c => (int)c.Rank).Distinct().OrderBy(r => r).ToList();
-            if (ranks.Count < 5)
+            // Use a bitmask to avoid expensive operation of sorting and checking sequences
+            int mask = 0;
+
+            // Build bitmask of distinct ranks (Two -> bit0, ..., Ace -> bit12)
+            foreach (var r in hand.Select(c => (int)c.Rank).Distinct())
             {
-                highCard = Rank.Two;
-                return false;
+                int idx = r == (int)Rank.Ace ? 12 : r - 2;
+                if (idx < 0 || idx > 12) continue;
+                mask |= 1 << idx;
             }
 
-            // Check for normal straights
-            for (int i = 0; i <= ranks.Count - 5; i++)
+            // Check for normal straights: any run of 5 consecutive bits set
+            const int fiveBits = 0b1_1111; // 5 ones
+            for (int i = 0; i <= 8; i++) // start positions 0..8 (2..10 as low card)
             {
-                // The low card minus the high card should equal 4 for a straight
-                if (ranks[i + 4] - ranks[i] == 4)
+                if (((mask >> i) & fiveBits) == fiveBits)
                 {
-                    highCard = (Rank)ranks[i + 4];
+                    int highRankValue = i + 6; // i..i+4 => high = (i+4)+2 = i+6
+                    highCard = (Rank)highRankValue;
                     return true;
                 }
             }
 
-            // Check for wheel straight (A-2-3-4-5)
-            if (ranks.Contains((int)Rank.Ace) &&
-                ranks.Contains((int)Rank.Two) &&
-                ranks.Contains((int)Rank.Three) &&
-                ranks.Contains((int)Rank.Four) &&
-                ranks.Contains((int)Rank.Five))
+            // Check wheel straight A-2-3-4-5 (Ace bit + bits 0..3)
+            int wheelMask = (1 << 12) | (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+            if ((mask & wheelMask) == wheelMask)
             {
                 highCard = Rank.Five;
                 return true;

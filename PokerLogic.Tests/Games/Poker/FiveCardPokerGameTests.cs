@@ -85,7 +85,22 @@ namespace PokerLogic.Tests.Games.Poker
             game.ValidateHands(players);
             // Assert
             Assert.That(player.Hand.Cards.Count, Is.EqualTo(6), "Player should have 6 cards after dealing and extra card.");
-            Assert.That(player.HasValidHand, Is.False, "Player's hand not should be valid after validation.");
+            Assert.That(player.HasValidHand, Is.False, "Player's hand should not be valid after validation.");
+        }
+
+        [Test]
+        public void ValidateHands_OnePlayerWithDuplicateCard_ShouldReturnHandInvalid()
+        {
+            var game = new FiveCardPokerGame();
+            var player = new Player("Justin");
+            var players = new List<Player> { player };
+            // Act
+            game.Deal(players);
+            player.GiveCards([player.Hand.Cards.First()]);
+            game.ValidateHands(players);
+            // Assert
+            Assert.That(player.Hand.Cards.Count, Is.EqualTo(6), "Player should have 6 cards after dealing and extra card.");
+            Assert.That(player.HasValidHand, Is.False, "Player's hand should not be valid after validation.");
         }
 
         [Test]
@@ -104,6 +119,24 @@ namespace PokerLogic.Tests.Games.Poker
             Assert.That(player2.Hand.Cards.Count, Is.EqualTo(5), "Player2 should have 5 cards after dealing.");
             Assert.That(player.HasValidHand, Is.True, "Player's hand should be valid after validation.");
             Assert.That(player2.HasValidHand, Is.True, "Player2's hand should be valid after validation.");
+        }
+
+        [Test]
+        public void ValidateHands_TwoPlayersThatShareCard_ShouldReturnBothHandsInvalid()
+        {
+            var game = new FiveCardPokerGame();
+            var player = new Player("Justin");
+            var player2 = new Player("Leah");
+            var players = new List<Player> { player, player2 };
+            // Act
+            game.Deal(players);
+            player.GiveCards([player2.Hand.Cards.First()]);
+            game.ValidateHands(players);
+            // Assert
+            Assert.That(player.Hand.Cards.Count, Is.EqualTo(6), "Player should have 6 cards after dealing and extra card.");
+            Assert.That(player2.Hand.Cards.Count, Is.EqualTo(5), "Player2 should have 5 cards after dealing.");
+            Assert.That(player.HasValidHand, Is.False, "Player's hand should not be valid after validation.");
+            Assert.That(player2.HasValidHand, Is.False, "Player2's hand should not be valid after validation.");
         }
 
         [Test]

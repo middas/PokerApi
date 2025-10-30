@@ -128,7 +128,7 @@ namespace PokerLogic.Games.Poker
             }
 
             // Check wheel straight A-2-3-4-5 (Ace bit + bits 0..3)
-            int wheelMask = (1 << 12) | (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+            const int wheelMask = (1 << 12) | (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
             if ((mask & wheelMask) == wheelMask)
             {
                 highCard = Rank.Five;
